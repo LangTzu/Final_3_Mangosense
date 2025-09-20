@@ -5,6 +5,9 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { MenuController } from '@ionic/angular';
+import { AddressService } from 'src/app/services/address.service';
+
 
 @Component({
   selector: 'app-register',
@@ -15,21 +18,30 @@ import { environment } from '../../../environments/environment';
 })
 export class RegisterPage implements OnInit {
   registerForm!: FormGroup;
-  isSubmitting: boolean = false;
+  isSubmitting = false;
+
+  provinces: string[] = [];
+  filteredCities: string[] = [];
+  filteredBarangays: string[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private http: HttpClient,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private menuController: MenuController,
+    private addressService: AddressService // <-- inject here
   ) {}
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
-      address: ['', [Validators.required, Validators.minLength(5)]],
+      province: ['', Validators.required],
+      city: ['', Validators.required],
+      barangay: ['', Validators.required],
+      postalCode: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
@@ -37,6 +49,16 @@ export class RegisterPage implements OnInit {
     }, {
       validators: this.passwordMatchValidator
     });
+
+    this.addressService.getProvinces().subscribe(provs => {
+      this.provinces = provs.map((prov: { name: string }) => prov.name); // ["Cebu", "Bohol"]
+    });
+  }
+  ionViewWillEnter() {
+    this.menuController.enable(false); // Ensure menu is hidden when entering this page
+  }
+  ionViewWillLeave() {
+    this.menuController.enable(true); // Re-enable menu when leaving register page
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -87,7 +109,10 @@ export class RegisterPage implements OnInit {
       const registerData = {
         first_name: formValue.firstName,
         last_name: formValue.lastName,
-        address: formValue.address,
+        province: formValue.province,
+        city: formValue.city,
+        barangay: formValue.barangay,
+        postal_code: formValue.postalCode,
         email: formValue.email,
         password: formValue.password
       };
@@ -182,5 +207,22 @@ export class RegisterPage implements OnInit {
       ]
     });
     await toast.present();
+  }
+
+  onProvinceChange(event: any) {
+    const province = event.detail.value;
+    this.registerForm.patchValue({ province });
+    this.addressService.getCities(province).subscribe(cities => {
+      this.filteredCities = cities.map((city: { name: string }) => city.name); // ["Cebu City", "Mandaue"]
+      this.filteredBarangays = [];
+    });
+  }
+
+  onCityChange(event: any) {
+    const city = event.detail.value;
+    this.registerForm.patchValue({ city });
+    this.addressService.getBarangays(this.registerForm.value.province, city).subscribe(brgys => {
+      this.filteredBarangays = brgys; // ["Barangay 1", "Barangay 2"]
+    });
   }
 }

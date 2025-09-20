@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -22,15 +23,27 @@ export class LoginPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
-  ) {}
-
-  ngOnInit() {
+    private toastCtrl: ToastController,
+    private menuController: MenuController
+  ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+  
+  ngOnInit() {
+    this.menuController.enable(false); 
+  }
+  
+  ionViewWillEnter() {
+    this.menuController.enable(false); 
+  }
+  
+  ionViewWillLeave() {
+    this.menuController.enable(true);
+  }
+
 
   // Add this method that your HTML template is calling
   async login() {

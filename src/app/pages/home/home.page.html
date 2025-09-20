@@ -66,62 +66,80 @@
         <p class="section-subtitle">Get instant disease detection results with AI-powered analysis</p>
       </div>
       
-      <!-- Detection Type Selection -->
-      <div class="selection-cards" *ngIf="!selectedDetectionType">
-        <h4 class="selection-title">What would you like to analyze?</h4>
-        <div class="card-row">
-          <ion-card class="detection-card" (click)="selectDetectionType('leaf')">
-            <ion-card-content>
-              <div class="card-icon">
-                <ion-icon name="leaf-outline"></ion-icon>
-              </div>
-              <h3>Leaf Analysis</h3>
-              <p>Detect diseases from mango leaves</p>
-            </ion-card-content>
-          </ion-card>
+      <!-- Detection Type Selection (hide when selectedDetectionType is set) -->
+      <div class="card-row" *ngIf="!selectedDetectionType">
+        <ion-card class="detection-card" (click)="selectDetectionType('leaf')">
+          <ion-card-content>
+        <div class="card-icon-wrapper">
+          <ion-icon name="leaf-outline" class="card-icon"></ion-icon>
+        </div>
+        <h3>Leaf</h3>
+        <p>Detect diseases from mango leaves</p>
+        <div class="card-glow"></div>
+          </ion-card-content>
+        </ion-card>
 
-          <ion-card class="detection-card" (click)="selectDetectionType('fruit')">
-            <ion-card-content>
-              <div class="card-icon">
-                <ion-icon name="nutrition-outline"></ion-icon>
+        <ion-card class="detection-card fruit-card" (click)="selectDetectionType('fruit')">
+          <ion-card-content>
+        <div class="card-icon-wrapper">
+          <ion-icon name="nutrition-outline" class="card-icon"></ion-icon>
+        </div>
+        <h3>Fruit</h3>
+        <p>Detect diseases from mango fruits</p>
+        <div class="card-glow"></div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Enhanced Selection Badge Section -->
+      <div class="selection-badge" *ngIf="selectedDetectionType">
+        <div class="selection-status">
+          <div class="status-card" [class.fruit-status]="selectedDetectionType === 'fruit'">
+            <div class="status-icon">
+              <ion-icon [name]="selectedDetectionType === 'leaf' ? 'leaf-outline' : 'nutrition-outline'"></ion-icon>
+            </div>
+            <div class="status-content">
+              <div class="status-title">
+                {{ selectedDetectionType === 'leaf' ? 'Leaf Analysis' : 'Fruit Analysis' }}
               </div>
-              <h3>Mango Fruit Analysis</h3>
-              <p>Detect diseases from mango fruits</p>
-            </ion-card-content>
-          </ion-card>
+              <div class="status-subtitle">
+                {{ selectedDetectionType === 'leaf' ? 'Leaf Disease Detection Model' : 'Fruit Disease Detection Model' }}
+              </div>
+            </div>
+            <div class="status-indicator">
+              <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+            </div>
+          </div>
+          
+          <ion-button fill="clear" class="change-selection-btn" 
+                      [class.fruit-change-btn]="selectedDetectionType === 'fruit'"
+                      (click)="clearSelection()">
+            <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+            Change
+          </ion-button>
         </div>
       </div>
 
-      <!-- Action Buttons (shown after selection) -->
+      <!-- Action Buttons (only show when detection type is selected) -->
       <div class="action-buttons" *ngIf="selectedDetectionType">
-        <div class="selection-badge">
-          <ion-chip color="success">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-            <ion-label>Analyzing {{selectedDetectionType === 'leaf' ? 'Leaf' : 'Fruit'}}</ion-label>
-          </ion-chip>
-          <ion-button fill="clear" size="small" (click)="clearSelection()">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-        </div>
-
         <ion-button expand="block" class="primary-button photo-button" (click)="importPhoto()">
           <div class="button-icon-wrapper">
-            <ion-icon name="images-outline" class="button-icon"></ion-icon>
+        <ion-icon name="images-outline" class="button-icon"></ion-icon>
           </div>
           <div class="button-content">
-            <span class="button-title">Import Photo</span>
-            <span class="button-subtitle">Select from gallery</span>
+        <span class="button-title">Import Photo</span>
+        <span class="button-subtitle">Select from gallery</span>
           </div>
           <ion-icon name="chevron-forward-outline" class="button-arrow"></ion-icon>
         </ion-button>
 
         <ion-button expand="block" class="primary-button camera-button" (click)="useCamera()">
           <div class="button-icon-wrapper">
-            <ion-icon name="camera-outline" class="button-icon"></ion-icon>
+        <ion-icon name="camera-outline" class="button-icon"></ion-icon>
           </div>
           <div class="button-content">
-            <span class="button-title">Take Photo</span>
-            <span class="button-subtitle">Use camera</span>
+        <span class="button-title">Take Photo</span>
+        <span class="button-subtitle">Use camera</span>
           </div>
           <ion-icon name="chevron-forward-outline" class="button-arrow"></ion-icon>
         </ion-button>

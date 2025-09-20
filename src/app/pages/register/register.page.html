@@ -1,7 +1,6 @@
 <ion-content>
   <div id="header">
     <div id="app-bar">
-      <ion-icon name="arrow-back" routerlink="/loader"></ion-icon>
       <div id="logo">
         <img src="assets/logo2.png" alt="Logo">
       </div>
@@ -38,14 +37,61 @@
             </ion-input>
           </ion-item>
           
+          <!-- Province -->
           <ion-item>
             <ion-icon name="location"></ion-icon>
-            <ion-input 
-              type="text" 
-              label="Address" 
-              labelPlacement="floating" 
-              placeholder="Enter address" 
-              formControlName="address"
+            <ion-select
+              label="Province"
+              labelPlacement="floating"
+              placeholder="Select province"
+              formControlName="province"
+              (ionChange)="onProvinceChange($event)">
+              <ion-select-option *ngFor="let prov of provinces" [value]="prov">
+                {{ prov }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- City -->
+          <ion-item>
+            <ion-icon name="business"></ion-icon>
+            <ion-select
+              label="City/Municipality"
+              labelPlacement="floating"
+              placeholder="Select city/municipality"
+              formControlName="city"
+              [disabled]="!filteredCities.length"
+              (ionChange)="onCityChange($event)">
+              <ion-select-option *ngFor="let city of filteredCities" [value]="city">
+                {{ city }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Barangay -->
+          <ion-item>
+            <ion-icon name="home"></ion-icon>
+            <ion-select
+              label="Barangay"
+              labelPlacement="floating"
+              placeholder="Select barangay"
+              formControlName="barangay"
+              [disabled]="!filteredBarangays.length">
+              <ion-select-option *ngFor="let brgy of filteredBarangays" [value]="brgy">
+                {{ brgy }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+
+          <ion-item>
+            <ion-icon name="mail-open"></ion-icon>
+            <ion-input
+              type="text"
+              label="Postal Code"
+              labelPlacement="floating"
+              placeholder="Enter postal code"
+              formControlName="postalCode"
               required>
             </ion-input>
           </ion-item>
@@ -85,6 +131,8 @@
               required>
             </ion-input>
           </ion-item>
+
+          
 
           <ion-item lines="none" class="terms-item">
             <ion-checkbox slot="start" formControlName="agree"></ion-checkbox>
